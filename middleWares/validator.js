@@ -6,6 +6,9 @@ exports.userValidator = [
     check('password').trim().not().isEmpty().withMessage('Password is missing!').isLength({min:5,max:20}).withMessage('password must be 5 to 20 characters long!')
 ];
 
+exports.validPassword = [check("newPassword").trim().not().isEmpty().withMessage('Password is missing!').isLength({min:5,max:20}).withMessage('password must be 5 to 20 characters long!')]
+
+
 exports.validate = (req,res,next)=>{
     const error = validationResult(req).array();
     if(error.length){

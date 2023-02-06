@@ -4,7 +4,8 @@ const EmailVerificationToken = require("../models/emailVerificationToken")
 const PasswordResetToken = require("../models/passwordResetToken")
 const {isValidObjectId} = require("mongoose");
 const { generateOTP, generateTransporter } = require('../utils/mail');
-const { sendError } = require('../utils/helper');
+const { sendError, generateRandomByte } = require('../utils/helper');
+const passwordResetToken = require('../models/passwordResetToken');
 
 
 //get unique ID
@@ -118,4 +119,53 @@ exports.forgetPassword = async(req,res)=>{
 
   const alreadyHasToken =  await PasswordResetToken.findOne({owner:user._id})
   if(alreadyHasToken) return sendError(res,"Only after one hour you can request for another token!")
+
+  const token = await generateRandomByte();
+  const newPasswordResetToken = await passwordResetToken({owner:user._id,token});
+
+  await newPasswordResetToken.save();
+
+  const resetPasswordUrl = `http;//localhost:3000/reset-password?token=${token}&id=${user._id}`;
+
+  const transport = generateTransporter();
+
+  transport.sendMail({
+    from:'security@reviewapp.com',
+    to: user.email,
+    subject: 'Reset Password',
+    html:
+    `<p>Click here to reset password</p>
+    <a href='${resetPasswordUrl}'>Change password</a>`
+  });
+
+  res.json({message:"Link sent to your email"})
+}
+
+exports.sendResetPasswordTokenStatus = (req,res)=>{
+  res.json({valid:true});
+}
+
+exports.resetPassword = async(req,res)=>{
+  const {newPassword, userId} = req.body;
+
+  const user = await User.findById(userId)
+  const matched = await user.comparePassword(newPassword)
+  if(matched) return sendError(res,'The new password must be different from the old one!')
+
+  user.password = newPassword
+  await user.save();
+
+  await PasswordResetToken.findByIdAndDelete(req.resetToken._id)
+
+  const transport = generateTransporter();
+
+  transport.sendMail({
+    from:'security@reviewapp.com',
+    to: user.email,
+    subject: 'Password Reset Successfully',
+    html:
+    `<h1>Password Reset Successfully</h1>`
+  });
+
+  res.json({message:"Password Reset Successfully"})
 }
