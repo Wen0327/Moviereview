@@ -82,6 +82,7 @@ exports.verifyEmail = async (req, res) => {
         name: user.name,
         email: user.email,
         token: jwtToken,
+        isVerified: user.isVerified
       }, message: "Successfully verified." });
 };
 
@@ -149,7 +150,7 @@ exports.forgetPassword = async (req, res) => {
 
   await newPasswordResetToken.save();
 
-  const resetPasswordUrl = `http://localhost:3000/auth/reset-password?token=${token}&id=${user._id}`;
+  const resetPasswordUrl = `http://localhost:3000/auth/password-reset?token=${token}&id=${user._id}`;
 
   const transport = generateTransporter();
 
@@ -206,8 +207,8 @@ exports.signIn = async (req, res) => {
   if (!matched) return sendError(res, "Email and password do not match");
 
   // secret key
-  const { _id, name } = user;
+  const { _id, name,isVerified } = user;
   const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
-  res.json({ user: { id: _id, name, email, token: jwtToken } });
+  res.json({ user: { id: _id, name, email, token: jwtToken,isVerified } });
 };
