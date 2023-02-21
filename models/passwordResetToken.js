@@ -9,7 +9,7 @@ const passwordResetTokenSchema = mongoose.Schema({
     },
     token:{
         type:String,
-        required:true
+        required:true,
     },
     createAt:{
         type:Date,
