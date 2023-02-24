@@ -18,7 +18,7 @@ exports.createActor = async (req, res) => {
   }
 
   await newActor.save();
-  res.status(201).json(formatActor(actor));
+  res.status(201).json(formatActor(newActor));
   // ? mark: make it to optional
 };
 
@@ -100,8 +100,9 @@ exports.getSingleActor = async (req, res) => {
   const { id } = req.params;
 
   if (!isValidObjectId(id)) return sendError(res, "Invalid request!");
+  
   const actor = await Actor.findById(id);
-  if (!isValidObjectId(actor))
-    return sendError(res, "Invalid request, actor not found!", 404);
+
+  if (!actor) return sendError(res, "Invalid request, actor not found!", 404);
   res.json(formatActor(actor));
 };

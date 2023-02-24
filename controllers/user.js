@@ -207,8 +207,8 @@ exports.signIn = async (req, res) => {
   if (!matched) return sendError(res, "Email and password do not match");
 
   // secret key
-  const { _id, name,isVerified } = user;
+  const { _id, name, isVerified, role } = user;
   const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
-  res.json({ user: { id: _id, name, email, token: jwtToken,isVerified } });
+  res.json({ user: { id: _id, name, email, role, token: jwtToken,isVerified } });
 };
