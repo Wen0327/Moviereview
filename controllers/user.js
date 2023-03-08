@@ -82,7 +82,8 @@ exports.verifyEmail = async (req, res) => {
         name: user.name,
         email: user.email,
         token: jwtToken,
-        isVerified: user.isVerified
+        isVerified: user.isVerified,
+        role:user.role
       }, message: "Successfully verified." });
 };
 
@@ -210,5 +211,5 @@ exports.signIn = async (req, res) => {
   const { _id, name, isVerified, role } = user;
   const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
-  res.json({ user: { id: _id, name, email, role, token: jwtToken,isVerified } });
+  res.json({ user: { id: _id, name, email, role, token: jwtToken,isVerified,role} });
 };
