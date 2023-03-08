@@ -75,7 +75,7 @@ exports.removeActor = async (req, res) => {
 
   await Actor.findByIdAndDelete(actorId);
 
-  res.json({ messageL: "Record removed successfully." });
+  res.json({ message: "Record removed successfully." });
 };
 
 exports.searchActor = async (req, res) => {

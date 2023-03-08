@@ -21,6 +21,11 @@ const movieSchema = mongoose.Schema(
       type: Date,
       required: true,
     },
+    status: {
+      type: String,
+      required: true,
+      enum: ["public", "private"],
+    },
     // movie's type
     type: {
       type: [String],
@@ -52,6 +57,7 @@ const movieSchema = mongoose.Schema(
       type: Object,
       url: { type: String, required: true },
       public_id: { type: String, required: true },
+      responsive: [URL],
       required: true,
     },
     trailer: {
@@ -69,4 +75,4 @@ const movieSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Movie',movieSchema)
+module.exports = mongoose.model("Movie", movieSchema);
